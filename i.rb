@@ -8,6 +8,7 @@ $active_squares = {}
 set title: "ruby's game of life"
 set width: GAME_WIDTH
 set height: GAME_HEIGHT
+set fps: 1
 
 # Draw horizontal lines
 (0...GAME_HEIGHT).each do |i|
@@ -33,7 +34,7 @@ end
 	end
 end
 
-def draw_square(x, y)
+def add_square(x, y)
 	key = "#{x},#{y}"
 	square = Square.new(
 		x: x,
@@ -57,7 +58,7 @@ def toggle_square(x, y)
 	if $active_squares[key]
 		remove_square(x, y)
 	else
-		draw_square(x, y)
+		add_square(x, y)
 	end
 end
 
@@ -99,37 +100,53 @@ def start_game
 	$game_started = true
 end
 
-def update_square(square)
-	neighbor_right = {x: square.x + 10, y: square.y}
-	neighbor_left = {x: square.x - 10, y: square.y}
-	neighbor_top = {x: square.x, y: square.y - 10}
-	neighbor_bottom = {x: square.x, y: square.y + 10}
-	neighbor_top_right = {x: square.x + 10, y: square.y - 10}
-	neighbor_bottom_right = {x: square.x + 10, y: square.y + 10}
-	neighbor_top_left = {x: square.x - 10, y: square.y - 10}
-	neighbor_bottom_left = {x: square.x - 10, y: square.y + 10}
-
-	neighbors = [
-		neighbor_right,
-		neighbor_left,
-		neighbor_top,
-		neighbor_bottom,
-		neighbor_top_right,
-		neighbor_bottom_right,
-		neighbor_top_left,
-		neighbor_bottom_left
+def count_neighbors(x, y)
+	neighbor_keys = [
+		"#{x + 10},#{y}",      # right
+		"#{x - 10},#{y}",      # left
+		"#{x},#{y - 10}",      # top
+		"#{x},#{y + 10}",      # bottom
+		"#{x + 10},#{y - 10}", # top-right
+		"#{x + 10},#{y + 10}", # bottom-right
+		"#{x - 10},#{y - 10}", # top-left
+		"#{x - 10},#{y + 10}"  # bottom-left
 	]
 
-	neighbor_count = neighbors.count do |neighbor|
-		$active_squares[{neighbor.x, neighbor.y}]
+	neighbor_keys.count { |key| $active_squares[key] }
+end
+
+
+# def update_square(square)
+# 	neighbor_count = count_neighbors(square.x, square.y)
+
+# 	if neighbor_count == 2 || neighbor_count == 3
+# 		puts 'keep alive'
+# 	else
+# 		puts "kill it"
+# 		remove_square(square.x, square.y)
+# 	end
+# end
+
+def get_all_potential_squares
+	potential_squares = Set.new
+
+	$active_squares.each_value do |square|
+		# add the current alive square
+		potential_squares.add([square.x, square.y])
+
+		# add all neighbors (potential birth locations)
+		# -10 previous, 10 next (for x and y)
+		[-10, 0, 10].each do |dx|
+			[-10, 0, 10].each do |dy|
+				next if dx == 0 && dy == 0
+				potential_squares.add([square.x + dx, square.y + dy])
+			end
+		end
 	end
 
-	if neighbor_count == 2 || neighbor_count == 3
-		puts 'keep alive'
-	else
-		remove_square(square.x, square.y)
-	end
+	potential_squares
 end
+
 
 
 # event handlers
@@ -151,10 +168,32 @@ end
 
 # animation loop
 update do
-	if $game_started
-		$active_squares.each_value do |square|
-			update_square(square)
+	if $game_started && Window.frames % 30 == 0
+		potential_squares = get_all_potential_squares
+		squares_to_add = []
+		squares_to_remove = []
+
+		potential_squares.each do |x, y|
+			key = "#{x},#{y}"
+			neighbor_count = count_neighbors(x, y)
+			is_alive = $active_squares[key]
+
+			if is_alive
+				# square dies if it doesn't have 2 or 3 neighbors
+				if neighbor_count != 2 && neighbor_count != 3
+					squares_to_remove << [x, y]
+				end
+			else
+				# dead squares spring to life if they have 3 neighbors
+				if neighbor_count == 3
+					squares_to_add << [x, y]
+				end
+			end
 		end
+
+		# apply changes after evaluation
+		squares_to_remove.each { |x, y| remove_square(x, y) }
+		squares_to_add.each { |x, y| add_square(x, y)}
 	end
 end
 
