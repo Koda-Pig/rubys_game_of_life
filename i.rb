@@ -5,6 +5,7 @@ GAME_HEIGHT = 400
 $game_started = false
 $active_squares = {}
 $mouse_is_clicked = false
+$drag_mode = nil # can be :add or :remove
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH
@@ -148,18 +149,37 @@ on :mouse_down do |event|
 		puts 'no clicky'
 	else
 		$mouse_is_clicked = true
+		x = round_down_to_nearest_ten(event.x)
+		y = round_down_to_nearest_ten(event.y)
+
+		# determine drag mode based on what's in the current position
+		key = "#{x},#{y}"
+		if $active_squares[key]
+			$drag_mode = :remove
+			remove_square(x, y)
+		else
+			$drag_mode = :add
+			add_square(x, y)
+		end
 	end
 end
 
 on :mouse_up do
 	$mouse_is_clicked = false
+	$drag_mode = nil 
 end
 
 on :mouse_move do |event|
-	if $mouse_is_clicked
+	if $mouse_is_clicked && !$game_started
 		x = round_down_to_nearest_ten(event.x)
 		y = round_down_to_nearest_ten(event.y)
-		toggle_square(x, y)
+		key = "#{x},#{y}"
+
+		if $drag_mode == :add && !$active_squares[key]
+			add_square(x, y)
+		elsif $drag_mode == :remove && $active_squares[key]
+			remove_square(x, y)
+		end
 	end
 end
 
