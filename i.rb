@@ -99,6 +99,39 @@ def start_game
 	$game_started = true
 end
 
+def update_square(square)
+	neighbor_right_key = "#{square.x + 10},#{square.y}"
+	neighbor_left_key = "#{square.x - 10},#{square.y}"
+	neighbor_top_key = "#{square.x},#{square.y - 10}"
+	neighbor_bottom_key = "#{square.x},#{square.y + 10}"
+	neighbor_top_right_key = "#{square.x + 10},#{square.y - 10}"
+	neighbor_bottom_right_key = "#{square.x + 10},#{square.y + 10}"
+	neighbor_top_left_key = "#{square.x - 10},#{square.y - 10}"
+	neighbor_bottom_left_key = "#{square.x - 10},#{square.y + 10}"
+
+	neighbor_keys = [
+		neighbor_right_key,
+		neighbor_left_key,
+		neighbor_top_key,
+		neighbor_bottom_key,
+		neighbor_top_right_key,
+		neighbor_bottom_right_key,
+		neighbor_top_left_key,
+		neighbor_bottom_left_key
+	]
+
+	neighbor_count = neighbor_keys.count do |neighbor|
+		$active_squares[neighbor]
+	end
+
+	if neighbor_count == 2 || neighbor_count == 3
+		puts 'keep alive'
+	else
+		remove_square(square.x, square.y)
+	end
+end
+
+
 # event handlers
 on :key_down do |event|
 	close if event.key == 'escape' 
@@ -113,13 +146,16 @@ on :mouse_down do |event|
 		x = round_down_to_nearest_ten(event.x)
 		y = round_down_to_nearest_ten(event.y)
 		toggle_square(x, y)
-		puts $active_squares
-		puts "_____"
 	end
 end
 
 # animation loop
 update do
+	if $game_started
+		$active_squares.each_value do |square|
+			update_square(square)
+		end
+	end
 end
 
 show
