@@ -55,7 +55,7 @@ $button_inner = Rectangle.new(
 	y: 11,
 	width: 78,
 	height: 28,
-	color: '#000000',
+	color: '#444444',
 	z: 1
 )
 $button_text = Text.new(
