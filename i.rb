@@ -1,7 +1,8 @@
 require 'ruby2d'
+require_relative 'grid'
 
-GAME_WIDTH = 600
-GAME_HEIGHT = 400
+GAME_WIDTH = 1440
+GAME_HEIGHT = 810
 BLOCK_SIZE = 20
 $game_started = false
 $active_squares = {}
@@ -13,31 +14,9 @@ $squares_to_remove = []
 set title: "ruby's game of life"
 set width: GAME_WIDTH
 set height: GAME_HEIGHT
-set fps: 1
 
-# Draw horizontal lines
-(0...GAME_HEIGHT).each do |i|
-	if i % BLOCK_SIZE == 0
-		Line.new(
-			x1: 0, y1: i,
-			x2: GAME_WIDTH, y2: i,
-			width: 1,
-			color: '#333333'
-		)
-	end
-end
-
-# Draw vertical lines
-(0...GAME_WIDTH).each do |i|
-	if i % BLOCK_SIZE == 0
-		Line.new(
-			x1: i, y1: 0,
-			x2: i, y2: GAME_WIDTH,
-			width: 1,
-			color: '#333333'
-		)
-	end
-end
+grid = Grid.new(GAME_WIDTH, GAME_HEIGHT, BLOCK_SIZE, '#111111')
+grid.draw()
 
 def add_square(x, y)
 	key = "#{x},#{y}"
@@ -114,14 +93,14 @@ end
 
 def count_neighbors(x, y)
 	neighbor_keys = [
-		"#{x + BLOCK_SIZE},#{y}",      # right
-		"#{x - BLOCK_SIZE},#{y}",      # left
-		"#{x},#{y - BLOCK_SIZE}",      # top
-		"#{x},#{y + BLOCK_SIZE}",      # bottom
-		"#{x + BLOCK_SIZE},#{y - BLOCK_SIZE}", # top-right
-		"#{x + BLOCK_SIZE},#{y + BLOCK_SIZE}", # bottom-right
-		"#{x - BLOCK_SIZE},#{y - BLOCK_SIZE}", # top-left
-		"#{x - BLOCK_SIZE},#{y + BLOCK_SIZE}"  # bottom-left
+		"#{x + BLOCK_SIZE},#{y}",      					# right
+		"#{x - BLOCK_SIZE},#{y}",      					# left
+		"#{x},#{y - BLOCK_SIZE}",      					# top
+		"#{x},#{y + BLOCK_SIZE}",      					# bottom
+		"#{x + BLOCK_SIZE},#{y - BLOCK_SIZE}",	# top-right
+		"#{x + BLOCK_SIZE},#{y + BLOCK_SIZE}",	# bottom-right
+		"#{x - BLOCK_SIZE},#{y - BLOCK_SIZE}",	# top-left
+		"#{x - BLOCK_SIZE},#{y + BLOCK_SIZE}" 	# bottom-left
 	]
 
 	neighbor_keys.count { |key| $active_squares[key] }
