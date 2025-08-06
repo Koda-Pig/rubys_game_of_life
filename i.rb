@@ -3,6 +3,7 @@ require 'ruby2d'
 GAME_WIDTH = 600
 GAME_HEIGHT = 400
 $game_started = false
+$active_squares = {}
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH
@@ -33,12 +34,31 @@ end
 end
 
 def draw_square(x, y)
-	Square.new(
+	key = "#{x},#{y}"
+	square = Square.new(
 		x: x,
 		y: y,
 		size: 10,
 		color: 'green'
 	)
+	$active_squares[key] = square
+end
+
+def remove_square(x, y)
+	key = "#{x},#{y}"
+	if $active_squares[key]
+		$active_squares[key].remove
+		$active_squares.delete(key)
+	end
+end
+
+def toggle_square(x, y)
+	key = "#{x},#{y}"
+	if $active_squares[key]
+		remove_square(x, y)
+	else
+		draw_square(x, y)
+	end
 end
 
 # Start button
@@ -90,10 +110,11 @@ on :mouse_down do |event|
 	elsif $start_btn_container.contains? event.x, event.y
 		start_game()
 	else
-		draw_square(
-			round_down_to_nearest_ten(event.x),
-			round_down_to_nearest_ten(event.y)
-		)
+		x = round_down_to_nearest_ten(event.x)
+		y = round_down_to_nearest_ten(event.y)
+		toggle_square(x, y)
+		puts $active_squares
+		puts "_____"
 	end
 end
 
