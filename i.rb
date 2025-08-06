@@ -20,13 +20,9 @@ grid.draw()
 
 def add_square(x, y)
 	key = "#{x},#{y}"
-	square = Square.new(
-		x: x,
-		y: y,
-		size: BLOCK_SIZE,
-		color: '#00ff00'
-	)
+	square = Square.new( x: x, y: y, size: BLOCK_SIZE, color: '#00ff00' )
 	$active_squares[key] = square
+	$alert_message.remove if $alert_message.respond_to?(:remove)
 end
 
 def remove_square(x, y)
@@ -46,26 +42,38 @@ def toggle_square(x, y)
 	end
 end
 
-# Start button
-$start_btn_container = Rectangle.new(
+$button_container = Rectangle.new(
 	x: 10,
 	y: 10,
 	width: 80,
 	height: 30,
-	color: '#ffffff'
+	color: '#ffffff',
+	z: 1
 )
-$start_btn_inner = Rectangle.new(
+$button_inner = Rectangle.new(
 	x: 11,
 	y: 11,
 	width: 78,
 	height: 28,
-	color: '#000000'
+	color: '#000000',
+	z: 1
 )
-$start_btn_text = Text.new(
+$button_text = Text.new(
 	'BEGIN',
 	x: 17,
 	y: 11,
-	color: 'green'
+	color: 'green',
+	z: 1
+)
+
+$alert_message = Text.new(
+	'DRAW SOME SQUARES FIRST!',
+	x: GAME_WIDTH / 2 - 50 * 8,
+	y: GAME_HEIGHT / 2 - 50,
+	color: 'white',
+	size: 50,
+	show: false,
+	z: 1
 )
 
 # This works because Ruby uses integer division when both
@@ -77,12 +85,17 @@ def round_down_to_nearest_BLOCK_SIZE(n)
   (n / BLOCK_SIZE) * BLOCK_SIZE
 end
 
-def start_game
+def trigger_interaction
 	if !$game_started
-		$start_btn_text.text = 'RESET'
-		$game_started = true
+		if $active_squares.length == 0
+			$alert_message.add
+		else
+			$alert_message.remove if $alert_message.respond_to?(:remove)
+			$button_text.text = 'RESET'
+			$game_started = true
+		end
 	else
-		$start_btn_text.text = 'BEGIN'
+		$button_text.text = 'BEGIN'
 		$active_squares.each_value { |square| square.remove }
 		$active_squares = {}
 		$squares_to_add = []
@@ -132,8 +145,8 @@ on :key_down do |event|
 end
 
 on :mouse_down do |event|
-	if $start_btn_container.contains? event.x, event.y
-		start_game()
+	if $button_container.contains? event.x, event.y
+		trigger_interaction()
 	elsif $game_started
 		puts 'no clicky!'
 	else
