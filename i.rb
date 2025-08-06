@@ -155,6 +155,7 @@ on :key_down do |event|
 end
 
 on :mouse_down do |event|
+	puts event
 	if $game_started
 		puts 'no clicky'
 	elsif $start_btn_container.contains? event.x, event.y
