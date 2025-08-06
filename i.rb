@@ -4,6 +4,7 @@ GAME_WIDTH = 600
 GAME_HEIGHT = 400
 $game_started = false
 $active_squares = {}
+$mouse_is_clicked = false
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH
@@ -115,18 +116,6 @@ def count_neighbors(x, y)
 	neighbor_keys.count { |key| $active_squares[key] }
 end
 
-
-# def update_square(square)
-# 	neighbor_count = count_neighbors(square.x, square.y)
-
-# 	if neighbor_count == 2 || neighbor_count == 3
-# 		puts 'keep alive'
-# 	else
-# 		puts "kill it"
-# 		remove_square(square.x, square.y)
-# 	end
-# end
-
 def get_all_potential_squares
 	potential_squares = Set.new
 
@@ -147,29 +136,37 @@ def get_all_potential_squares
 	potential_squares
 end
 
-
-
 # event handlers
 on :key_down do |event|
 	close if event.key == 'escape' 
 end
 
 on :mouse_down do |event|
-	puts event
-	if $game_started
-		puts 'no clicky'
-	elsif $start_btn_container.contains? event.x, event.y
+	if $start_btn_container.contains? event.x, event.y
 		start_game()
+	elsif $game_started
+		puts 'no clicky'
 	else
+		$mouse_is_clicked = true
+	end
+end
+
+on :mouse_up do
+	$mouse_is_clicked = false
+end
+
+on :mouse_move do |event|
+	if $mouse_is_clicked
 		x = round_down_to_nearest_ten(event.x)
 		y = round_down_to_nearest_ten(event.y)
 		toggle_square(x, y)
 	end
 end
 
+
 # animation loop
 update do
-	if $game_started && Window.frames % 30 == 0
+	if $game_started && Window.frames % 10 == 0
 		potential_squares = get_all_potential_squares
 		squares_to_add = []
 		squares_to_remove = []
