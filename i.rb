@@ -100,28 +100,28 @@ def start_game
 end
 
 def update_square(square)
-	neighbor_right_key = "#{square.x + 10},#{square.y}"
-	neighbor_left_key = "#{square.x - 10},#{square.y}"
-	neighbor_top_key = "#{square.x},#{square.y - 10}"
-	neighbor_bottom_key = "#{square.x},#{square.y + 10}"
-	neighbor_top_right_key = "#{square.x + 10},#{square.y - 10}"
-	neighbor_bottom_right_key = "#{square.x + 10},#{square.y + 10}"
-	neighbor_top_left_key = "#{square.x - 10},#{square.y - 10}"
-	neighbor_bottom_left_key = "#{square.x - 10},#{square.y + 10}"
+	neighbor_right = {x: square.x + 10, y: square.y}
+	neighbor_left = {x: square.x - 10, y: square.y}
+	neighbor_top = {x: square.x, y: square.y - 10}
+	neighbor_bottom = {x: square.x, y: square.y + 10}
+	neighbor_top_right = {x: square.x + 10, y: square.y - 10}
+	neighbor_bottom_right = {x: square.x + 10, y: square.y + 10}
+	neighbor_top_left = {x: square.x - 10, y: square.y - 10}
+	neighbor_bottom_left = {x: square.x - 10, y: square.y + 10}
 
-	neighbor_keys = [
-		neighbor_right_key,
-		neighbor_left_key,
-		neighbor_top_key,
-		neighbor_bottom_key,
-		neighbor_top_right_key,
-		neighbor_bottom_right_key,
-		neighbor_top_left_key,
-		neighbor_bottom_left_key
+	neighbors = [
+		neighbor_right,
+		neighbor_left,
+		neighbor_top,
+		neighbor_bottom,
+		neighbor_top_right,
+		neighbor_bottom_right,
+		neighbor_top_left,
+		neighbor_bottom_left
 	]
 
-	neighbor_count = neighbor_keys.count do |neighbor|
-		$active_squares[neighbor]
+	neighbor_count = neighbors.count do |neighbor|
+		$active_squares[{neighbor.x, neighbor.y}]
 	end
 
 	if neighbor_count == 2 || neighbor_count == 3
