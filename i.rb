@@ -2,6 +2,7 @@ require 'ruby2d'
 
 GAME_WIDTH = 600
 GAME_HEIGHT = 400
+BLOCK_SIZE = 20
 $game_started = false
 $active_squares = {}
 $mouse_is_clicked = false
@@ -16,7 +17,7 @@ set fps: 1
 
 # Draw horizontal lines
 (0...GAME_HEIGHT).each do |i|
-	if i % 10 == 0
+	if i % BLOCK_SIZE == 0
 		Line.new(
 			x1: 0, y1: i,
 			x2: GAME_WIDTH, y2: i,
@@ -28,7 +29,7 @@ end
 
 # Draw vertical lines
 (0...GAME_WIDTH).each do |i|
-	if i % 10 == 0
+	if i % BLOCK_SIZE == 0
 		Line.new(
 			x1: i, y1: 0,
 			x2: i, y2: GAME_WIDTH,
@@ -43,7 +44,7 @@ def add_square(x, y)
 	square = Square.new(
 		x: x,
 		y: y,
-		size: 10,
+		size: BLOCK_SIZE,
 		color: '#00ff00'
 	)
 	$active_squares[key] = square
@@ -92,9 +93,9 @@ $start_btn_text = Text.new(
 # operands are integers. When you divide an integer by another integer
 # it automatically TRUNCATES (rounds down) to the nearest whole number.
 # This is the rounding outcome we want, we just have to multiply 
-# by 10 then to get back to the nearest 10
-def round_down_to_nearest_ten(n)
-  (n / 10) * 10
+# by BLOCK_SIZE then to get back to the nearest BLOCK_SIZE
+def round_down_to_nearest_BLOCK_SIZE(n)
+  (n / BLOCK_SIZE) * BLOCK_SIZE
 end
 
 def start_game
@@ -113,14 +114,14 @@ end
 
 def count_neighbors(x, y)
 	neighbor_keys = [
-		"#{x + 10},#{y}",      # right
-		"#{x - 10},#{y}",      # left
-		"#{x},#{y - 10}",      # top
-		"#{x},#{y + 10}",      # bottom
-		"#{x + 10},#{y - 10}", # top-right
-		"#{x + 10},#{y + 10}", # bottom-right
-		"#{x - 10},#{y - 10}", # top-left
-		"#{x - 10},#{y + 10}"  # bottom-left
+		"#{x + BLOCK_SIZE},#{y}",      # right
+		"#{x - BLOCK_SIZE},#{y}",      # left
+		"#{x},#{y - BLOCK_SIZE}",      # top
+		"#{x},#{y + BLOCK_SIZE}",      # bottom
+		"#{x + BLOCK_SIZE},#{y - BLOCK_SIZE}", # top-right
+		"#{x + BLOCK_SIZE},#{y + BLOCK_SIZE}", # bottom-right
+		"#{x - BLOCK_SIZE},#{y - BLOCK_SIZE}", # top-left
+		"#{x - BLOCK_SIZE},#{y + BLOCK_SIZE}"  # bottom-left
 	]
 
 	neighbor_keys.count { |key| $active_squares[key] }
@@ -134,9 +135,9 @@ def get_all_potential_squares
 		potential_squares.add([square.x, square.y])
 
 		# add all neighbors (potential birth locations)
-		# -10 previous, 10 next (for x and y)
-		[-10, 0, 10].each do |dx|
-			[-10, 0, 10].each do |dy|
+		# -BLOCK_SIZE previous, BLOCK_SIZE next (for x and y)
+		[-BLOCK_SIZE, 0, BLOCK_SIZE].each do |dx|
+			[-BLOCK_SIZE, 0, BLOCK_SIZE].each do |dy|
 				next if dx == 0 && dy == 0
 				potential_squares.add([square.x + dx, square.y + dy])
 			end
@@ -158,8 +159,8 @@ on :mouse_down do |event|
 		puts 'no clicky!'
 	else
 		$mouse_is_clicked = true
-		x = round_down_to_nearest_ten(event.x)
-		y = round_down_to_nearest_ten(event.y)
+		x = round_down_to_nearest_BLOCK_SIZE(event.x)
+		y = round_down_to_nearest_BLOCK_SIZE(event.y)
 
 		# determine drag mode based on what's in the current position
 		key = "#{x},#{y}"
@@ -180,8 +181,8 @@ end
 
 on :mouse_move do |event|
 	if $mouse_is_clicked && !$game_started
-		x = round_down_to_nearest_ten(event.x)
-		y = round_down_to_nearest_ten(event.y)
+		x = round_down_to_nearest_BLOCK_SIZE(event.x)
+		y = round_down_to_nearest_BLOCK_SIZE(event.y)
 		key = "#{x},#{y}"
 
 		if $drag_mode == :add && !$active_squares[key]
