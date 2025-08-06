@@ -42,7 +42,7 @@ def add_square(x, y)
 		x: x,
 		y: y,
 		size: 10,
-		color: 'green'
+		color: random
 	)
 	$active_squares[key] = square
 end
