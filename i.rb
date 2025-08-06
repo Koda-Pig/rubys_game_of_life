@@ -20,7 +20,12 @@ grid.draw()
 
 def add_square(x, y)
 	key = "#{x},#{y}"
-	square = Square.new( x: x, y: y, size: BLOCK_SIZE, color: '#00ff00' )
+	square = Square.new(
+		x: x, y: y,
+		size: BLOCK_SIZE,
+		color: '#00ff00',
+		opacity: rand()
+	)
 	$active_squares[key] = square
 	$alert_message.remove if $alert_message.respond_to?(:remove)
 end
