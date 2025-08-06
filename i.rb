@@ -6,6 +6,8 @@ $game_started = false
 $active_squares = {}
 $mouse_is_clicked = false
 $drag_mode = nil # can be :add or :remove
+$squares_to_add = []
+$squares_to_remove = []
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH
@@ -42,7 +44,7 @@ def add_square(x, y)
 		x: x,
 		y: y,
 		size: 10,
-		color: random
+		color: '#00ff00'
 	)
 	$active_squares[key] = square
 end
@@ -96,10 +98,17 @@ def round_down_to_nearest_ten(n)
 end
 
 def start_game
-	$start_btn_container.remove
-	$start_btn_inner.remove
-	$start_btn_text.remove
-	$game_started = true
+	if !$game_started
+		$start_btn_text.text = 'RESET'
+		$game_started = true
+	else
+		$start_btn_text.text = 'BEGIN'
+		$active_squares.each_value { |square| square.remove }
+		$active_squares = {}
+		$squares_to_add = []
+		$squares_to_remove = []
+		$game_started = false
+	end
 end
 
 def count_neighbors(x, y)
@@ -134,7 +143,7 @@ def get_all_potential_squares
 		end
 	end
 
-	potential_squares
+	potential_squares #returns automatically (thanks Ruby!)
 end
 
 # event handlers
@@ -146,7 +155,7 @@ on :mouse_down do |event|
 	if $start_btn_container.contains? event.x, event.y
 		start_game()
 	elsif $game_started
-		puts 'no clicky'
+		puts 'no clicky!'
 	else
 		$mouse_is_clicked = true
 		x = round_down_to_nearest_ten(event.x)
@@ -188,8 +197,6 @@ end
 update do
 	if $game_started && Window.frames % 10 == 0
 		potential_squares = get_all_potential_squares
-		squares_to_add = []
-		squares_to_remove = []
 
 		potential_squares.each do |x, y|
 			key = "#{x},#{y}"
@@ -199,19 +206,23 @@ update do
 			if is_alive
 				# square dies if it doesn't have 2 or 3 neighbors
 				if neighbor_count != 2 && neighbor_count != 3
-					squares_to_remove << [x, y]
+					$squares_to_remove << [x, y]
 				end
 			else
 				# dead squares spring to life if they have 3 neighbors
 				if neighbor_count == 3
-					squares_to_add << [x, y]
+					$squares_to_add << [x, y]
 				end
 			end
 		end
 
 		# apply changes after evaluation
-		squares_to_remove.each { |x, y| remove_square(x, y) }
-		squares_to_add.each { |x, y| add_square(x, y)}
+		$squares_to_remove.each { |x, y| remove_square(x, y) }
+		$squares_to_add.each { |x, y| add_square(x, y)}
+
+		# Clear arrays for next generation
+		$squares_to_add = []
+		$squares_to_remove = []
 	end
 end
 
