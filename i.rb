@@ -4,6 +4,7 @@ require_relative 'grid'
 GAME_WIDTH = 1440
 GAME_HEIGHT = 810
 BLOCK_SIZE = 20
+ANIMATION_SPEED = 10
 $game_started = false
 $active_squares = {}
 $mouse_is_clicked = false
@@ -165,33 +166,31 @@ end
 
 # animation loop
 update do
-	if $game_started && Window.frames % 10 == 0
-		potential_squares = get_all_potential_squares
+	next unless $game_started && Window.frames % ANIMATION_SPEED == 0
 
-		potential_squares.each do |x, y|
-			key = "#{x},#{y}"
-			neighbor_count = count_neighbors(x, y)
-			is_alive = $active_squares[key]
+	potential_squares = get_all_potential_squares
 
-			if is_alive
-				# square dies if it doesn't have 2 or 3 neighbors
-				$squares_to_remove << [x, y] if neighbor_count != 2 && neighbor_count != 3
-			else
-				# dead squares spring to life if they have 3 neighbors
-				if neighbor_count == 3
-					$squares_to_add << [x, y]
-				end
-			end
+	potential_squares.each do |x, y|
+		key = "#{x},#{y}"
+		neighbor_count = count_neighbors(x, y)
+		is_alive = $active_squares[key]
+
+		if is_alive
+			# square dies if it doesn't have 2 or 3 neighbors
+			$squares_to_remove << [x, y] if neighbor_count != 2 && neighbor_count != 3
+		else
+			# dead squares spring to life if they have 3 neighbors
+			$squares_to_add << [x, y] if neighbor_count == 3
 		end
-
-		# apply changes after evaluation
-		$squares_to_remove.each { |x, y| remove_square(x, y) }
-		$squares_to_add.each { |x, y| add_square(x, y)}
-
-		# Clear arrays for next generation
-		$squares_to_add = []
-		$squares_to_remove = []
 	end
+
+	# apply changes after evaluation
+	$squares_to_remove.each { |x, y| remove_square(x, y) }
+	$squares_to_add.each { |x, y| add_square(x, y)}
+
+	# Clear arrays for next generation
+	$squares_to_add = []
+	$squares_to_remove = []
 end
 
 show
