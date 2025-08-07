@@ -24,7 +24,7 @@ def add_square(x, y)
 		x: x, y: y,
 		size: BLOCK_SIZE,
 		color: '#00ff00',
-		opacity: rand()
+		opacity: 0.5 + rand() * 0.5
 	)
 	$active_squares[key] = square
 	$alert_message.remove if $alert_message.respond_to?(:remove)
@@ -38,38 +38,10 @@ def remove_square(x, y)
 	end
 end
 
-def toggle_square(x, y)
-	key = "#{x},#{y}"
-	if $active_squares[key]
-		remove_square(x, y)
-	else
-		add_square(x, y)
-	end
-end
-
-$button_container = Rectangle.new(
-	x: 10,
-	y: 10,
-	width: 80,
-	height: 30,
-	color: '#ffffff',
-	z: 1
-)
-$button_inner = Rectangle.new(
-	x: 11,
-	y: 11,
-	width: 78,
-	height: 28,
-	color: '#444444',
-	z: 1
-)
-$button_text = Text.new(
-	'BEGIN',
-	x: 17,
-	y: 11,
-	color: 'green',
-	z: 1
-)
+# Button
+$button_container = Rectangle.new( x: 10, y: 10, width: 80, height: 30, color: '#ffffff', z: 1 )
+Rectangle.new( x: 11, y: 11, width: 78, height: 28, color: '#444444', z: 1 )
+$button_text = Text.new( 	'BEGIN', 	x: 17, 	y: 11, 	color: 'green', 	z: 1 )
 
 $alert_message = Text.new(
 	'DRAW SOME SQUARES FIRST!',
@@ -203,9 +175,7 @@ update do
 
 			if is_alive
 				# square dies if it doesn't have 2 or 3 neighbors
-				if neighbor_count != 2 && neighbor_count != 3
-					$squares_to_remove << [x, y]
-				end
+				$squares_to_remove << [x, y] if neighbor_count != 2 && neighbor_count != 3
 			else
 				# dead squares spring to life if they have 3 neighbors
 				if neighbor_count == 3
