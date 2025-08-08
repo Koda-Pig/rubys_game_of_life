@@ -61,18 +61,33 @@ class GameOfLife
 	end
 
 	def count_neighbors(x, y)
-		neighbor_keys = [
-			"#{x + @block_size},#{y}",      					# right
-			"#{x - @block_size},#{y}",      					# left
-			"#{x},#{y - @block_size}",      					# top
-			"#{x},#{y + @block_size}",      					# bottom
-			"#{x + @block_size},#{y - @block_size}",	# top-right
-			"#{x + @block_size},#{y + @block_size}",	# bottom-right
-			"#{x - @block_size},#{y - @block_size}",	# top-left
-			"#{x - @block_size},#{y + @block_size}" 	# bottom-left
+		neighbor_offsets = [
+			[@block_size, 0],                    # right
+			[-@block_size, 0],                   # left
+			[0, -@block_size],                   # top
+			[0, @block_size],                    # bottom
+			[@block_size, -@block_size],         # top-right
+			[@block_size, @block_size],          # bottom-right
+			[-@block_size, -@block_size],        # top-left
+			[-@block_size, @block_size]          # bottom-left
 		]
-	
-		neighbor_keys.count { |key| @active_squares[key] }
+
+		neighbor_offsets.count do |dx, dy|
+			# Calculate neighbor position with wrapping
+			nx = x + dx
+			ny = y + dy
+			
+			# Wrap around horizontally
+			nx = 0 if nx >= @width
+			nx = @width - @block_size if nx < 0
+			
+			# Wrap around vertically  
+			ny = 0 if ny >= @height
+			ny = @height - @block_size if ny < 0
+			
+			key = "#{nx},#{ny}"
+			@active_squares[key]
+		end
 	end
 
 	def get_all_potential_squares
@@ -83,11 +98,19 @@ class GameOfLife
 			potential_squares.add([square.x, square.y])
 	
 			# add all neighbors (potential birth locations)
-			# -BLOCK_SIZE previous, BLOCK_SIZE next (for x and y)
 			[-@block_size, 0, @block_size].each do |dx|
 				[-@block_size, 0, @block_size].each do |dy|
 					next if dx == 0 && dy == 0
-					potential_squares.add([square.x + dx, square.y + dy])
+
+					# wrapping logic
+					nx = square.x + dx
+					ny = square.y + dy
+					nx = 0 if nx >= @width
+					nx = @width - @block_size if nx < 0
+					ny = 0 if ny >= @height
+					ny = @height - @block_size if ny < 0
+
+					potential_squares.add([nx, ny])
 				end
 			end
 		end
