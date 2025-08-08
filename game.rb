@@ -119,8 +119,12 @@ class GameOfLife
 	end
 
 	def handle_mouse_down(event)
-		if @ui.button_container.contains? event.x, event.y
+		if @ui.start_button.contains? event.x, event.y
 			button_click()
+		elsif @ui.speed_down_btn.contains? event.x, event.y
+			puts "speed down"
+		elsif @ui.speed_up_btn.contains? event.x, event.y
+			puts "speed up"
 		else
 			@mouse_is_clicked = true
 			x = round_block(event.x, @block_size)
