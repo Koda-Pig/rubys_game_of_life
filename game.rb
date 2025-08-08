@@ -6,7 +6,7 @@ def round_block(n, size)
 end
 
 class GameOfLife
-	attr_accessor :game_started, :speed
+	attr_accessor :game_started, :speed, :ui
 
 	def initialize(width, height, block_size)
 		@width = width
@@ -122,10 +122,13 @@ class GameOfLife
 	def handle_mouse_down(event)
 		if @ui.start_button.contains? event.x, event.y
 			click_start()
+			@ui.start_button.color = '#00ff00'
 		elsif @ui.speed_down_btn.contains? event.x, event.y
 			@speed += 5 if @speed < 200
+			@ui.speed_down_btn.color = '#00ff00'
 		elsif @ui.speed_up_btn.contains? event.x, event.y
 			@speed -= 5 if @speed > 5
+			@ui.speed_up_btn.color = '#00ff00'
 		else
 			@mouse_is_clicked = true
 			x = round_block(event.x, @block_size)
@@ -146,6 +149,7 @@ class GameOfLife
 	def handle_mouse_up
 		@mouse_is_clicked = false
 		@drag_mode = nil 
+		@ui.reset_btn_colors()
 	end
 
 	def handle_mouse_move(event)
@@ -163,7 +167,6 @@ class GameOfLife
 	end
 
 	def handle_click_start
-		puts "button clicked"
 		if @game_started
 			reset_game()
 		else

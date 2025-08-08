@@ -1,5 +1,9 @@
 class UI
-	attr_accessor :start_button, :speed_down_btn, :speed_up_btn, :button_text, :alert_message
+	attr_accessor :start_button,
+								:speed_down_btn,
+								:speed_up_btn,
+								:button_text,
+								:alert_message
 
 	def initialize(width, height)
 		@width = width
@@ -27,5 +31,11 @@ class UI
 		@speed_up_btn = Rectangle.new( x: 140, y: 10, width: 30, height: 30, color: '#ffffff', z: 1 )
 		Rectangle.new( x: 141, y: 11, width: 28, height: 28, color: '#444444', z: 1 )
 		Text.new( '+', x: 150, y: 11, color: '#ffffff', z: 1 )
+	end
+
+	def reset_btn_colors
+		@speed_down_btn.color = '#ffffff'
+		@speed_up_btn.color = '#ffffff'
+		@start_button.color = '#ffffff'
 	end
 end
