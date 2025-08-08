@@ -41,7 +41,7 @@ class GameOfLife
 		@active_squares.delete(key)
 	end
 
-	def button_click
+	def click_start
 		if !@game_started
 			if @active_squares.length == 0
 				@ui.alert_message.add
@@ -120,7 +120,7 @@ class GameOfLife
 
 	def handle_mouse_down(event)
 		if @ui.start_button.contains? event.x, event.y
-			button_click()
+			click_start()
 		elsif @ui.speed_down_btn.contains? event.x, event.y
 			puts "speed down"
 		elsif @ui.speed_up_btn.contains? event.x, event.y
@@ -161,7 +161,7 @@ class GameOfLife
 		end
 	end
 
-	def handle_button_click
+	def handle_click_start
 		puts "button clicked"
 		if @game_started
 			reset_game()
