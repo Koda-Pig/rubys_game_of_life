@@ -7,7 +7,6 @@ require_relative 'game'
 GAME_WIDTH = 1440
 GAME_HEIGHT = 810
 BLOCK_SIZE = 20
-ANIMATION_SPEED = 10
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH
@@ -34,7 +33,7 @@ on :mouse_move do |event|
 end
 
 update do
-	next unless game.game_started && Window.frames % ANIMATION_SPEED == 0
+	next unless game.game_started && Window.frames % game.speed == 0
 	game.update()
 end
 

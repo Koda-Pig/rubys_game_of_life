@@ -6,7 +6,7 @@ def round_block(n, size)
 end
 
 class GameOfLife
-	attr_accessor :game_started
+	attr_accessor :game_started, :speed
 
 	def initialize(width, height, block_size)
 		@width = width
@@ -20,6 +20,7 @@ class GameOfLife
 		@squares_to_remove = []
 		Grid.new(@width, @height, @block_size, '#111111')
 		@ui = UI.new(@width, @height)
+		@speed = 10
 	end
 
 	def add_square(x, y)
@@ -122,9 +123,9 @@ class GameOfLife
 		if @ui.start_button.contains? event.x, event.y
 			click_start()
 		elsif @ui.speed_down_btn.contains? event.x, event.y
-			puts "speed down"
+			@speed -= 5 if @speed > 1
 		elsif @ui.speed_up_btn.contains? event.x, event.y
-			puts "speed up"
+			@speed += 5 if @speed < 120
 		else
 			@mouse_is_clicked = true
 			x = round_block(event.x, @block_size)
