@@ -7,7 +7,7 @@ require_relative 'game'
 GAME_WIDTH = 1440
 GAME_HEIGHT = 810
 BLOCK_SIZE = 20
-ANIMATION_SPEED = 20
+ANIMATION_SPEED = 10
 
 set title: "ruby's game of life"
 set width: GAME_WIDTH

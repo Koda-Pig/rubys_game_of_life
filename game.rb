@@ -27,8 +27,8 @@ class GameOfLife
 		square = Square.new(
 			x: x, y: y,
 			size: @block_size,
-			color: '#00ff00',
-			opacity: 0.5 + rand() * 0.5
+			color: [0, 1, rand(), 1],
+			# opacity: 0.5 + rand() * 0.5
 		)
 		@active_squares[key] = square
 		@ui.alert_message.remove if @ui.alert_message.respond_to?(:remove)
