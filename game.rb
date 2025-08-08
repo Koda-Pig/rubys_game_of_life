@@ -124,10 +124,10 @@ class GameOfLife
 			click_start()
 			@ui.start_button.color = '#00ff00'
 		elsif @ui.speed_down_btn.contains? event.x, event.y
-			@speed += 5 if @speed < 200
+			@speed += 2 if @speed < 60
 			@ui.speed_down_btn.color = '#00ff00'
 		elsif @ui.speed_up_btn.contains? event.x, event.y
-			@speed -= 5 if @speed > 5
+			@speed -= 2 if @speed > 2
 			@ui.speed_up_btn.color = '#00ff00'
 		else
 			@mouse_is_clicked = true
