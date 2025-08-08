@@ -123,9 +123,9 @@ class GameOfLife
 		if @ui.start_button.contains? event.x, event.y
 			click_start()
 		elsif @ui.speed_down_btn.contains? event.x, event.y
-			@speed -= 5 if @speed > 1
+			@speed += 5 if @speed < 200
 		elsif @ui.speed_up_btn.contains? event.x, event.y
-			@speed += 5 if @speed < 120
+			@speed -= 5 if @speed > 5
 		else
 			@mouse_is_clicked = true
 			x = round_block(event.x, @block_size)
