@@ -4,6 +4,8 @@ class Grid
 		@height = height
 		@block_size = block_size
 		@color = color
+
+		draw()
 	end
 
 	def draw
