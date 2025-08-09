@@ -81,11 +81,7 @@ class GameOfLife
 		]
 
 		neighbor_offsets.count do |dx, dy|
-			nx = x + dx
-			ny = y + dy
-
-			nx, ny = wraparound(nx, ny)
-
+			nx, ny = wraparound(x + dx, y + dy)
 			key = "#{nx},#{ny}"
 			@active_squares[key]
 		end
@@ -102,13 +98,7 @@ class GameOfLife
 			[-@block_size, 0, @block_size].each do |dx|
 				[-@block_size, 0, @block_size].each do |dy|
 					next if dx == 0 && dy == 0
-
-					nx = square.x + dx
-					ny = square.y + dy
-
-					
-					
-					potential_squares.add(wraparound(nx, ny))
+					potential_squares.add(wraparound(square.x + dx, square.y + dy))
 				end
 			end
 		end
