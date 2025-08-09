@@ -29,7 +29,6 @@ class GameOfLife
 			x: x, y: y,
 			size: @block_size,
 			color: [0, 1, rand(), 1],
-			# opacity: 0.5 + rand() * 0.5
 		)
 		@active_squares[key] = square
 		@ui.alert_message.remove if @ui.alert_message.respond_to?(:remove)
@@ -42,8 +41,12 @@ class GameOfLife
 		@active_squares.delete(key)
 	end
 
-	def is_out_of_bounds(x, y)
-		x < 0 || x >= @width || y < 0 || y >= @height
+	def wraparound(x, y)
+		x = 0 if x >= @width
+		x = @width - @block_size if x < 0
+		y = 0 if y >= @height
+		y = @height - @block_size if y < 0
+		return [x, y]
 	end
 
 	def click_start
@@ -81,12 +84,10 @@ class GameOfLife
 			nx = x + dx
 			ny = y + dy
 
-			out_of_bounds = is_out_of_bounds(nx, ny)
-			
-			unless out_of_bounds
-				key = "#{nx},#{ny}"
-				@active_squares[key]
-			end
+			nx, ny = wraparound(nx, ny)
+
+			key = "#{nx},#{ny}"
+			@active_squares[key]
 		end
 	end
 
@@ -105,9 +106,9 @@ class GameOfLife
 					nx = square.x + dx
 					ny = square.y + dy
 
-					out_of_bounds = is_out_of_bounds(nx, ny)
 					
-					potential_squares.add([nx, ny]) unless out_of_bounds
+					
+					potential_squares.add(wraparound(nx, ny))
 				end
 			end
 		end
