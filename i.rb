@@ -2,10 +2,10 @@ require 'ruby2d'
 require_relative 'grid'
 require_relative 'game'
 
-GAME_WIDTH = 720
-GAME_HEIGHT = 720
-# GAME_WIDTH = 1440
-# GAME_HEIGHT = 810
+# GAME_WIDTH = 720
+# GAME_HEIGHT = 720
+GAME_WIDTH = 1440
+GAME_HEIGHT = 810
 BLOCK_SIZE = 20
 
 set title: "ruby's game of life"
