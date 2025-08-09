@@ -26,11 +26,12 @@ class UI
 		# speed btns
 		@speed_down_btn = Rectangle.new( x: 100, y: 10, width: 30, height: 30, color: '#ffffff', z: 1 )
 		Rectangle.new( x: 101, y: 11, width: 28, height: 28, color: '#444444', z: 1 )
-		Text.new( '-', x: 110, y: 11, color: '#ffffff', z: 1 )
-
+		Rectangle.new( x: 108, y: 24, width: 15, height: 2, color: '#ffffff', z: 1 )
+		
 		@speed_up_btn = Rectangle.new( x: 140, y: 10, width: 30, height: 30, color: '#ffffff', z: 1 )
 		Rectangle.new( x: 141, y: 11, width: 28, height: 28, color: '#444444', z: 1 )
-		Text.new( '+', x: 150, y: 11, color: '#ffffff', z: 1 )
+		Rectangle.new( x: 148, y: 24, width: 15, height: 2, color: '#ffffff', z: 1 )
+		Rectangle.new( x: 154, y: 18, width: 2, height: 15, color: '#ffffff', z: 1 )
 	end
 
 	def reset_btn_colors
