@@ -1,7 +1,7 @@
 require_relative 'grid'
 require_relative 'ui'
 
-def round_block(n, size)
+def round_down(n, size)
   (n / size) * size
 end
 
@@ -42,6 +42,10 @@ class GameOfLife
 		@active_squares.delete(key)
 	end
 
+	def is_out_of_bounds(x, y)
+		x < 0 || x >= @width || y < 0 || y >= @height
+	end
+
 	def click_start
 		if !@game_started
 			if @active_squares.length == 0
@@ -77,17 +81,13 @@ class GameOfLife
 			# Calculate neighbor position with wrapping
 			nx = x + dx
 			ny = y + dy
+
+			out_of_bounds = is_out_of_bounds(nx, ny)
 			
-			# Wrap around horizontally
-			nx = 0 if nx >= @width
-			nx = @width - @block_size if nx < 0
-			
-			# Wrap around vertically  
-			ny = 0 if ny >= @height
-			ny = @height - @block_size if ny < 0
-			
-			key = "#{nx},#{ny}"
-			@active_squares[key]
+			unless out_of_bounds
+				key = "#{nx},#{ny}"
+				@active_squares[key]
+			end
 		end
 	end
 
@@ -103,15 +103,12 @@ class GameOfLife
 				[-@block_size, 0, @block_size].each do |dy|
 					next if dx == 0 && dy == 0
 
-					# wrapping logic
 					nx = square.x + dx
 					ny = square.y + dy
-					nx = 0 if nx >= @width
-					nx = @width - @block_size if nx < 0
-					ny = 0 if ny >= @height
-					ny = @height - @block_size if ny < 0
 
-					potential_squares.add([nx, ny])
+					out_of_bounds = is_out_of_bounds(nx, ny)
+					
+					potential_squares.add([nx, ny]) unless out_of_bounds
 				end
 			end
 		end
@@ -131,8 +128,8 @@ class GameOfLife
 			@ui.speed_up_btn.color = '#00ff00'
 		else
 			@mouse_is_clicked = true
-			x = round_block(event.x, @block_size)
-			y = round_block(event.y, @block_size)
+			x = round_down(event.x, @block_size)
+			y = round_down(event.y, @block_size)
 	
 			# determine drag mode based on what's in the clicked position
 			key = "#{x},#{y}"
@@ -154,8 +151,8 @@ class GameOfLife
 
 	def handle_mouse_move(event)
 		if @mouse_is_clicked && !@game_started
-			x = round_block(event.x, @block_size)
-			y = round_block(event.y, @block_size)
+			x = round_down(event.x, @block_size)
+			y = round_down(event.y, @block_size)
 			key = "#{x},#{y}"
 	
 			if @drag_mode == :add && !@active_squares[key]
