@@ -78,7 +78,6 @@ class GameOfLife
 		]
 
 		neighbor_offsets.count do |dx, dy|
-			# Calculate neighbor position with wrapping
 			nx = x + dx
 			ny = y + dy
 
