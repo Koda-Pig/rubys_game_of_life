@@ -18,9 +18,12 @@ class GameOfLife
 		@drag_mode = nil # :add / :remove
 		@squares_to_add = []
 		@squares_to_remove = []
+		@speed = 10.0
+		@speed_min = 2.0
+		@speed_max = 60.0
 		Grid.new(@width, @height, @block_size, '#111111')
-		@ui = UI.new(@width, @height)
-		@speed = 10
+		@ui = UI.new(@width, @height, @speed)
+		@ui.update_speed_ui(@speed, @speed_min, @speed_max)
 	end
 
 	def add_square(x, y)
@@ -46,7 +49,7 @@ class GameOfLife
 		x = @width - @block_size if x < 0
 		y = 0 if y >= @height
 		y = @height - @block_size if y < 0
-		return [x, y]
+		[x, y]
 	end
 
 	def click_start
@@ -103,19 +106,23 @@ class GameOfLife
 			end
 		end
 	
-		potential_squares #returns automatically (thanks Ruby!)
+		potential_squares
 	end
 
 	def handle_mouse_down(event)
+		speed_changed = false
+
 		if @ui.start_button.contains? event.x, event.y
 			click_start()
 			@ui.start_button.color = '#00ff00'
 		elsif @ui.speed_down_btn.contains? event.x, event.y
-			@speed += 2 if @speed < 60
+			@speed += @speed_min if @speed < @speed_max
 			@ui.speed_down_btn.color = '#00ff00'
+			speed_changed = true
 		elsif @ui.speed_up_btn.contains? event.x, event.y
-			@speed -= 2 if @speed > 2
+			@speed -= @speed_min if @speed > @speed_min
 			@ui.speed_up_btn.color = '#00ff00'
+			speed_changed = true
 		else
 			@mouse_is_clicked = true
 			x = round_down(event.x, @block_size)
@@ -131,6 +138,8 @@ class GameOfLife
 				add_square(x, y)
 			end
 		end
+
+		@ui.update_speed_ui(@speed, @speed_min, @speed_max) if speed_changed
 	end
 
 	def handle_mouse_up
